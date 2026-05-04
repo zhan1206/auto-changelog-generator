@@ -1,74 +1,64 @@
 # Auto Changelog Generator
 
-Automatically generate changelogs from git history, supporting conventional commits format.
+Automatically generate a standardized CHANGELOG from Git commit history with Conventional Commits support.
 
 ## Features
 
-- **Conventional Commits parsing**: Auto-recognize feat:, fix:, docs:, etc.
-- **Group by type**: Categorize commits into Features, Bug Fixes, Documentation, etc.
-- **Tag range support**: Generate changelog for specific version ranges
-- **Multiple output formats**: Text, JSON, Markdown, HTML
-- **Zero dependencies**: Uses only Python standard library
+- **Automatic Commit Categorization**: feat / fix / docs / refactor and more
+- **Conventional Commits Support**: Recognizes `feat:`, `fix:`, `perf:` and other standard prefixes
+- **Multiple Output Formats**: Markdown (default), Text, JSON, HTML
+- **Multi-language**: Automatically recognizes Chinese and English commits
+- **Zero Dependencies**: Uses only Python standard library
 
 ## Supported Commit Types
 
 | Type | Description |
-|------|------------|
+|------|-------------|
 | feat | New features |
 | fix | Bug fixes |
-| docs | Documentation updates |
-| style | Code style changes |
-| refactor | Code refactoring |
 | perf | Performance improvements |
-| test | Test-related changes |
-| build | Build system changes |
-| ci | CI configuration |
+| refactor | Code refactoring |
+| docs | Documentation updates |
+| style | Style changes |
+| test | Test-related |
+| build | Build system |
+| ci | CI/CD |
 | chore | Maintenance |
-| revert | Reverted commits |
-| breaking | Breaking changes |
+| revert | Reverts |
 
 ## Usage
 
 ```bash
-# Analyze current git repository
-python scripts/auto_changelog_generator.py .
+# Generate Markdown CHANGELOG
+python scripts/auto_changelog_generator.py . -o CHANGELOG.md
 
-# Specify project path
-python scripts/auto_changelog_generator.py /path/to/repo
+# Generate Text format
+python scripts/auto_changelog_generator.py . --format text
 
-# Output Markdown (default)
-python scripts/auto_changelog_generator.py . --format markdown -o CHANGELOG.md
+# Generate JSON format
+python scripts/auto_changelog_generator.py . --format json -o changelog.json
 
-# Output HTML
+# Generate HTML format
 python scripts/auto_changelog_generator.py . --format html -o changelog.html
 
-# Specify version range
-python scripts/auto_changelog_generator.py . --from-tag v1.0.0 --to-tag v1.1.0
+# Only get commits since a date
+python scripts/auto_changelog_generator.py . --since 2024-01-01
 ```
 
-## Example Output
+## Recommended Commit Format
 
-```markdown
-# Changelog
+```
+<type>(<scope>): <subject>
 
-**Project**: /path/to/project
-**Total Commits**: 42
-
----
-
-## Features
-
-- `a1b2c3d` Add user authentication
-- `e4f5g6h` Implement dark mode
-
-## Bug Fixes
-
-- `i7j8k9l` Fix login timeout issue
+# Examples
+feat(auth): add JWT token refresh
+fix(api): handle null response from external service
+docs: update API documentation
 ```
 
 ## Installation
 
-No installation needed. Requires Python 3.8+ and a git repository.
+No installation needed. Requires Python 3.8+.
 
 ```bash
 git clone https://github.com/zhan1206/auto-changelog-generator.git
