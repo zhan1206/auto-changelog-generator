@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Auto Changelog Generator - 自动生成规范化的变更日志
-基于 Git 提交历史和 conventional commits 规范生成 CHANGELOG.md
+基于 Git 提交历史和 conventional commits 规范生成 CHANGELOG
 支持 semver 版本管理和多语言
 """
 
@@ -11,9 +11,24 @@ import re
 import json
 import argparse
 import subprocess
+import shutil
 from datetime import datetime
 from pathlib import Path
 from collections import defaultdict
+
+
+def find_git():
+    """自动查找 git 可执行文件路径"""
+    git_exe = shutil.which('git')
+    if git_exe:
+        return git_exe
+    fallback = r"C:\Program Files\Git\cmd\git.exe"
+    if os.path.exists(fallback):
+        return fallback
+    fallback2 = r"C:\Program Files (x86)\Git\cmd\git.exe"
+    if os.path.exists(fallback2):
+        return fallback2
+    return 'git'
 
 
 # Conventional commit types
@@ -37,17 +52,11 @@ CONVENTIONAL_PATTERN = re.compile(
     r'(?:\(([^)]+)\))?\s*:\s*(.+)$'
 )
 
-SIMPLE_ISSUE_PATTERN = re.compile(r'#(\d+)')
-PR_PATTERN = re.compile(r'\(#[0-9]+\)')
-SCOPE_PATTERN = re.compile(r'\(([^)]+)\)')
-SUBJECT_PATTERN = re.compile(r'^(?:feat|fix|...)(?:\([^)]+\))?\s*:\s*(.+)')
-
-GIT_EXE = r"C:\Users\朱子瞻\AppData\Local\Git\cmd\git.exe"
-
 
 def run_git_log(path, fmt='%H|%s|%an|%ae|%ad|%D', num=500, since=None):
     """运行 git log 获取提交历史"""
-    cmd = [GIT_EXE, 'log', f'--format={fmt}', f'--logsize={num}']
+    git_exe = find_git()
+    cmd = [git_exe, 'log', f'--format={fmt}', f'--max-count={num}']
     if since:
         cmd.extend(['--since', since])
     cmd.extend(['--date=iso'])
@@ -68,8 +77,9 @@ def run_git_log(path, fmt='%H|%s|%an|%ae|%ad|%D', num=500, since=None):
 
 def get_tag_versions(path):
     """获取所有版本标签"""
+    git_exe = find_git()
     result = subprocess.run(
-        [GIT_EXE, 'tag', '--sort=-version:refname'],
+        [git_exe, 'tag', '--sort=-version:refname'],
         cwd=path,
         capture_output=True,
         text=True,
@@ -149,13 +159,6 @@ def generate_changelog(project_path, options=None):
     if not commits:
         return {'error': '没有找到提交记录'}
 
-    # 按日期分组
-    by_date = defaultdict(list)
-    for commit in commits:
-        if commit['date']:
-            date = commit['date'][:10]
-            by_date[date].append(commit)
-
     # 按类型分组
     by_type = defaultdict(list)
     for commit in commits:
@@ -174,7 +177,6 @@ def generate_changelog(project_path, options=None):
         'total_commits': len(commits),
         'commits': commits[:10],
         'by_type': dict(by_type),
-        'by_date': dict(by_date),
         'types': list(by_type.keys()),
     }
 
