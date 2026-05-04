@@ -1,0 +1,25 @@
+# Ignore patterns for Auto Changelog Generator
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Project specific
+*.pyc
+ scripts/__pycache__/
